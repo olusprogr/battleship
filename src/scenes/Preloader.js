@@ -9,8 +9,12 @@ export class Preloader extends Scene
 
     init ()
     {
-        //  We loaded this image in our Boot Scene, so we can display it here
-        this.add.image(512, 384, 'background');
+        //  Images
+        this.add.image(512, 384, 'war-ship');
+
+        //  Sounds
+        const music = this.sound.add('background-music');
+        music.play({loop: true});
 
         //  A simple progress bar. This is the outline of the bar.
         this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);

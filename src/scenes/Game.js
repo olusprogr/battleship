@@ -19,10 +19,10 @@ export class Game extends Scene
             align: 'center'
         }).setOrigin(0.5);
 
-        this.input.once('pointerdown', () => {
+        // this.input.once('pointerdown', () => {
 
-            this.scene.start('GameOver');
+        //     this.scene.start('GameOver');
 
-        });
+        // });
     }
 }
