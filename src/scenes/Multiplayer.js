@@ -9,6 +9,6 @@ export class Multiplayer extends Scene
 
     create()
     {
-        this.add.image(100, 100, 'war-ship')
+        this.add.image(512, 484, 'war-ship')
     }
 }

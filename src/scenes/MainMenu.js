@@ -13,6 +13,15 @@ export class MainMenu extends Scene
         this.add.image(512, 484, 'war-ship');
         // this.add.image(512, 300, 'logo');
 
+        // Settings button and functionality
+        const settingsButton = this.add.image(1000, 50, 'settings')
+            .setInteractive()
+            .setScale(0.5);
+
+        settingsButton.on('pointerdown', () => {
+            console.log('Settings-Button geklickt');
+        });
+
 
         // Creating a more visually appealing "War Ship" title with a metallic, grungy black and white style
         const titleText = this.add.text(512, 200, 'War Ship', {
