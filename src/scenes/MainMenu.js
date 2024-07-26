@@ -61,6 +61,10 @@ export class MainMenu extends Scene
             singleplayerButton.setScale(1);
         });
 
+        singleplayerButton.on('pointerdown', () => {
+            this.scene.start('Singleplayer');
+        });
+
 
 
         // Multiplayer button settings
@@ -79,6 +83,10 @@ export class MainMenu extends Scene
         multiplayerButton.on('pointerout', () => {
             multiplayerButton.setStyle({ fill: '#cccccc' });
             multiplayerButton.setScale(1);
+        });
+
+        multiplayerButton.on('pointerdown', () => {
+            this.scene.start('Multiplayer');
         });
 
 
