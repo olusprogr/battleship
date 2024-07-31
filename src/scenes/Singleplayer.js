@@ -203,7 +203,7 @@ export class Singleplayer extends Scene {
                 const right = this.getCellAt(lastRow, lastCol + 1, this.playerGrid);
 
                 availablePlaces.push(up, down, left, right)
-                for (direction in availablePlaces) {
+                for (let direction in availablePlaces) {
                     if (direction.isAlreadyBeenHitten) {
                         availablePlaces = availablePlaces.filter(direction => !direction.isAlreadyBeenHitten)
                     }
