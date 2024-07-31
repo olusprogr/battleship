@@ -17,10 +17,20 @@ export class Singleplayer extends Scene {
         this.isVertical = false; // Orientation of the ship (horizontal/vertical)
         this.allShipsArePlaced = false;
         this.opponentShipsPlaced = false;
+        this.playerTurn = true; // Track whose turn it is
+        this.lastHit = null; // Last hit of the robot
     }
 
     update() {
-        if (this.allShipsArePlaced && this.opponentShipsPlaced === false) {this.placeOpponentShips()}
+        if (this.allShipsArePlaced && this.opponentShipsPlaced === false) {
+            this.placeOpponentShips();
+        }
+        if (this.allShipsArePlaced && this.opponentShipsPlaced) {
+            // Continue game logic here
+            if (this.checkGameOver()) {
+                this.endGame();
+            }
+        }
     }
 
     create() {
@@ -57,6 +67,7 @@ export class Singleplayer extends Scene {
                     cell.col = col;
                     cell.gridType = gridType; // Indicate which grid the cell belongs to
                     cell.isOccupied = false; // Indicate if the cell is occupied by a ship
+                    cell.isAlreadyBeenHitten = false; // Indicate if the cell already has been hitten by a missle
 
                     // Handle pointer down (click) event
                     cell.on('pointerdown', () => {
@@ -80,17 +91,18 @@ export class Singleplayer extends Scene {
     }
 
     cellClicked(cell) {
-        // Handle the cell click event for placing ships
-        if (cell.gridType === 'player') {
-            this.placeShip(cell);
-        } else if (cell.gridType === 'opponent') {
-            // Logic for opponent's grid click
-            cell.fillColor = 0xff0000; // Change the color of the cell to red
+        // Handle the cell click event
+        if (this.playerTurn) {
+            if (cell.gridType === 'player') {
+                this.placeShip(cell);
+            } else if (cell.gridType === 'opponent') {
+                this.attackCell(cell);
+            }
         }
     }
 
     placeShip(startCell) {
-        if (this.allShipsArePlaced) {return}
+        if (this.allShipsArePlaced) { return }
         const ship = this.ships[this.currentShipIndex];
         const cellsToOccupy = [];
 
@@ -129,8 +141,6 @@ export class Singleplayer extends Scene {
         this.ships.forEach(ship => {
             let placed = false;
             while (!placed) {
-
-                // Generating random place for ship
                 const isVertical = Math.random() < 0.5;
                 const startRow = Math.floor(Math.random() * (isVertical ? 10 - ship.size : 10));
                 const startCol = Math.floor(Math.random() * (isVertical ? 10 : 10 - ship.size));
@@ -153,9 +163,114 @@ export class Singleplayer extends Scene {
                         cell.isOccupied = true; // Mark the cell as occupied
                     });
                     placed = true;
-                    this.opponentShipsPlaced = true
+                    this.opponentShipsPlaced = true;
                 }
             }
         });
+    }
+
+    attackCell(cell) {
+        // Handle the attack on the opponent's grid
+        if (cell.isAlreadyBeenHitten) {return}
+        if (!cell.isOccupied) {
+            cell.fillColor = 0x0000ff; // Miss
+        } else {
+            cell.fillColor = 0xff0000; // Hit
+        }
+        cell.isOccupied = false; // Mark cell as attacked
+        this.playerTurn = false; // Switch turn to opponent
+        cell.isAlreadyBeenHitten = true; // Mark cell as hitten
+
+        // Call opponent's turn after a delay
+        this.time.delayedCall(100, () => {
+            this.opponentAttack();
+        });
+    }
+
+    opponentAttack() {
+        let attacked = false;
+        let directionAttempts = 0;
+        while (!attacked) {
+            if (this.lastHit !== null) {
+                console.log("last hit")
+                const lastRow = this.lastHit.row;
+                const lastCol = this.lastHit.col;
+
+                
+
+    
+                if (foundValidCell) {
+                    if (cell.isOccupied) {
+                        console.log("cell is not already been hitten but occupied")
+                        console.log("hallo2", cell)
+                        cell.fillColor = 0xff0000; // red
+                        cell.isOccupied = true;
+                        cell.isAlreadyBeenHitten = true;
+                        attacked = true;
+                        this.lastHit = { row: cell.row, col: cell.col };
+                    } else {
+                        console.log("cell is not already been hitten and not occupied")
+                        console.log("hallo", cell)
+                        cell.fillColor = 0x0000ff; // blue
+                        cell.isAlreadyBeenHitten = true;
+                        attacked = true;
+                    }
+                } else {
+                    console.log("no other cells found that can be hitten")
+                    this.lastHit = null;
+                }
+
+            } else {
+                console.log("no last hit")
+                while (!attacked) {
+                    const row = Math.floor(Math.random() * 10);
+                    const col = Math.floor(Math.random() * 10);
+                    const cell = this.getCellAt(row, col, this.playerGrid);
+
+                    console.log("trying to place on cell: ", cell.row + 1, cell.col + 1)
+        
+                    if (!cell.isAlreadyBeenHitten) {
+                        if (cell.isOccupied) {
+                            console.log("founded cell is occupied and not been already hitten")
+                            cell.fillColor = 0xff0000;
+                            cell.isOccupied = false;
+                            attacked = true;
+                            this.lastHit = { row: cell.row, col: cell.col };
+                            break;
+                        } else {
+                            cell.fillColor = 0x0000ff;
+                        }
+                        cell.isAlreadyBeenHitten = true;
+                        attacked = true;
+                    }
+                }
+            }
+        }
+        this.playerTurn = true;
+    }
+    
+
+    checkGameOver() {
+        // Check if all ships of one player are sunk
+        const playerShips = this.playerGrid.getAll().filter(cell => cell.isOccupied).length;
+        const opponentShips = this.opponentGrid.getAll().filter(cell => cell.isOccupied).length;
+
+        if (playerShips === 0 || opponentShips === 0) {
+            return true;
+        }
+        return false;
+    }
+
+    endGame() {
+        // Handle end game logic
+        this.add.text(512, 400, 'Game Over', {
+            fontFamily: 'Arial Black',
+            fontSize: 80,
+            color: '#ff0000',
+            stroke: '#000000',
+            strokeThickness: 8,
+            align: 'center'
+        }).setOrigin(0.5);
+        this.scene.pause();
     }
 }
