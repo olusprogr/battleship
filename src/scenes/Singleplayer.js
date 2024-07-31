@@ -209,7 +209,7 @@ export class Singleplayer extends Scene {
                     }
                 }
                 console.log(availablePlaces)
-                foundValidCell = true
+                let foundValidCell = true
 
     
                 if (foundValidCell) {
