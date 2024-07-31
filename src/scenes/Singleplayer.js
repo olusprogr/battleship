@@ -211,6 +211,13 @@ export class Singleplayer extends Scene {
                 console.log(availablePlaces)
                 let foundValidCell = true
 
+                for (let direction in availablePlaces) {
+                    availablePlaces = availablePlaces.filter(direction => !direction.isAlreadyBeenHitten)
+                }
+
+                randomDirection = Math.floor(Math.random() * availablePlaces.length)
+                let cell = availablePlaces[randomDirection]
+
     
                 if (foundValidCell) {
                     if (cell.isOccupied) {
