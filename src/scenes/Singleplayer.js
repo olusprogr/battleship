@@ -195,8 +195,21 @@ export class Singleplayer extends Scene {
                 console.log("last hit")
                 const lastRow = this.lastHit.row;
                 const lastCol = this.lastHit.col;
+                let availablePlaces = []
 
-                
+                const up = this.getCellAt(lastRow + 1, lastCol, this.playerGrid);
+                const down = this.getCellAt(lastRow - 1, lastCol, this.playerGrid);
+                const left = this.getCellAt(lastRow, lastCol - 1, this.playerGrid);
+                const right = this.getCellAt(lastRow, lastCol + 1, this.playerGrid);
+
+                availablePlaces.push(up, down, left, right)
+                for (direction in availablePlaces) {
+                    if (direction.isAlreadyBeenHitten) {
+                        availablePlaces = availablePlaces.filter(direction => !direction.isAlreadyBeenHitten)
+                    }
+                }
+                console.log(availablePlaces)
+                foundValidCell = true
 
     
                 if (foundValidCell) {
