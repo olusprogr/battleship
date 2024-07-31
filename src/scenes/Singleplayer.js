@@ -159,7 +159,7 @@ export class Singleplayer extends Scene {
 
                 if (cellsToOccupy.length === ship.size) {
                     cellsToOccupy.forEach(cell => {
-                        cell.fillColor = 0xA9A9A9; // Change the color of the cell to blue
+                        // cell.fillColor = 0xA9A9A9; // Change the color of the cell to blue
                         cell.isOccupied = true; // Mark the cell as occupied
                     });
                     placed = true;
@@ -189,80 +189,66 @@ export class Singleplayer extends Scene {
 
     opponentAttack() {
         let attacked = false;
-        let directionAttempts = 0;
         while (!attacked) {
             if (this.lastHit !== null) {
-                console.log("last hit")
                 const lastRow = this.lastHit.row;
                 const lastCol = this.lastHit.col;
-                let availablePlaces = []
+                let availablePlaces = [];
+                let foundValidCell = false;
+                let cell;
 
                 const up = this.getCellAt(lastRow + 1, lastCol, this.playerGrid);
                 const down = this.getCellAt(lastRow - 1, lastCol, this.playerGrid);
                 const left = this.getCellAt(lastRow, lastCol - 1, this.playerGrid);
                 const right = this.getCellAt(lastRow, lastCol + 1, this.playerGrid);
 
-                availablePlaces.push(up, down, left, right)
-                for (let direction in availablePlaces) {
-                    if (direction.isAlreadyBeenHitten) {
-                        availablePlaces = availablePlaces.filter(direction => !direction.isAlreadyBeenHitten)
-                    }
+                availablePlaces.push(up, down, left, right);
+                availablePlaces = availablePlaces.filter(cell => cell !== undefined && !cell.isAlreadyBeenHitten);
+                let randomDirection = Math.floor(Math.random() * availablePlaces.length);
+
+                if (availablePlaces.length > 0) {
+                    cell = availablePlaces[randomDirection];
+                    foundValidCell = true;
                 }
-                console.log(availablePlaces)
-                let foundValidCell = true
-
-                for (let direction in availablePlaces) {
-                    availablePlaces = availablePlaces.filter(direction => !direction.isAlreadyBeenHitten)
-                }
-
-                randomDirection = Math.floor(Math.random() * availablePlaces.length)
-                let cell = availablePlaces[randomDirection]
-
     
                 if (foundValidCell) {
-                    if (cell.isOccupied) {
-                        console.log("cell is not already been hitten but occupied")
-                        console.log("hallo2", cell)
+                    if (cell.isOccupied && !cell.isAlreadyBeenHitten) {
                         cell.fillColor = 0xff0000; // red
-                        cell.isOccupied = true;
+                        cell.isOccupied = false;
                         cell.isAlreadyBeenHitten = true;
                         attacked = true;
                         this.lastHit = { row: cell.row, col: cell.col };
-                    } else {
-                        console.log("cell is not already been hitten and not occupied")
-                        console.log("hallo", cell)
+                    } else if (!cell.isOccupied) {
                         cell.fillColor = 0x0000ff; // blue
                         cell.isAlreadyBeenHitten = true;
                         attacked = true;
                     }
                 } else {
-                    console.log("no other cells found that can be hitten")
                     this.lastHit = null;
                 }
 
             } else {
-                console.log("no last hit")
                 while (!attacked) {
                     const row = Math.floor(Math.random() * 10);
                     const col = Math.floor(Math.random() * 10);
                     const cell = this.getCellAt(row, col, this.playerGrid);
-
-                    console.log("trying to place on cell: ", cell.row + 1, cell.col + 1)
         
                     if (!cell.isAlreadyBeenHitten) {
                         if (cell.isOccupied) {
-                            console.log("founded cell is occupied and not been already hitten")
-                            cell.fillColor = 0xff0000;
+                            cell.fillColor = 0xff0000; // red
                             cell.isOccupied = false;
+                            cell.isAlreadyBeenHitten = true;
                             attacked = true;
                             this.lastHit = { row: cell.row, col: cell.col };
                             break;
                         } else {
-                            cell.fillColor = 0x0000ff;
+                            cell.fillColor = 0x0000ff; // blue
+                            cell.isAlreadyBeenHitten = true;
                         }
-                        cell.isAlreadyBeenHitten = true;
                         attacked = true;
                     }
+
+                    console.log(cell.isAlreadyBeenHitten)
                 }
             }
         }
