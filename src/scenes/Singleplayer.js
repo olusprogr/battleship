@@ -1,32 +1,22 @@
 import { Scene } from 'phaser';
+import ShipManager from '../objects/ship';
 
 export class Singleplayer extends Scene {
     constructor() {
         super('Singleplayer');
 
-        // Define the ships and their sizes
-        this.ships = [
-            { name: 'Carrier', size: 5 },
-            { name: 'Battleship', size: 4 },
-            { name: 'Cruiser', size: 3 },
-            { name: 'Submarine', size: 3 },
-            { name: 'Destroyer', size: 2 }
-        ];
+        this.opponentShips = new ShipManager()
+        this.playerShips = new ShipManager()
 
         this.currentShipIndex = 0; // Index of the current ship to be placed
         this.isVertical = false; // Orientation of the ship (horizontal/vertical)
-        this.allShipsArePlaced = false;
-        this.opponentShipsPlaced = false;
         this.playerTurn = true; // Track whose turn it is
         this.lastHit = null; // Last hit of the robot
     }
 
     update() {
-        if (this.allShipsArePlaced && this.opponentShipsPlaced === false) {
-            this.placeOpponentShips();
-        }
-        if (this.allShipsArePlaced && this.opponentShipsPlaced) {
-            // Continue game logic here
+        if (this.playerShips.allShipsPlaced() && !this.opponentShips.allShipsPlaced()) { this.placeOpponentShips() }
+        if (this.playerShips.allShipsPlaced() && this.opponentShips.allShipsPlaced()) {
             if (this.checkGameOver()) {
                 this.endGame();
             }
@@ -102,8 +92,7 @@ export class Singleplayer extends Scene {
     }
 
     placeShip(startCell) {
-        if (this.allShipsArePlaced) { return }
-        const ship = this.ships[this.currentShipIndex];
+        const ship = this.playerShips.ships[this.currentShipIndex];
         const cellsToOccupy = [];
 
         // Calculate the cells the ship would occupy
@@ -113,24 +102,22 @@ export class Singleplayer extends Scene {
 
             // Check if the cell is within bounds and not occupied
             const cell = this.getCellAt(row, col, this.playerGrid);
-            if (!cell || cell.isOccupied) {
-                return; // Invalid placement
-            }
+            if (!cell || cell.isOccupied) { return }
             cellsToOccupy.push(cell);
+
+            this.playerShips.saveCoordinates(ship.name, row, col); // here
         }
 
         // Place the ship
         cellsToOccupy.forEach(cell => {
             cell.fillColor = 0x00ff00; // Change the color of the cell to green
             cell.isOccupied = true; // Mark the cell as occupied
+            this.playerShips.setShipPlaced(ship.name, true); // here
         });
 
         // Move to the next ship
         this.currentShipIndex++;
-        if (this.currentShipIndex >= this.ships.length) {
-            this.currentShipIndex = 0; // All ships placed
-            this.allShipsArePlaced = true;
-        }
+        if (this.playerShips.allShipsPlaced()) { this.playerTurn = false }
     }
 
     getCellAt(row, col, grid) {
@@ -138,7 +125,7 @@ export class Singleplayer extends Scene {
     }
 
     placeOpponentShips() {
-        this.ships.forEach(ship => {
+        this.opponentShips.ships.forEach(ship => {
             let placed = false;
             while (!placed) {
                 const isVertical = Math.random() < 0.5;
@@ -151,7 +138,7 @@ export class Singleplayer extends Scene {
                     const col = isVertical ? startCol : startCol + i;
                     const cell = this.getCellAt(row, col, this.opponentGrid);
                     if (!cell || cell.isOccupied) {
-                        cellsToOccupy.length = 0; // Invalid placement
+                        cellsToOccupy.length = 0;
                         break;
                     }
                     cellsToOccupy.push(cell);
@@ -159,14 +146,16 @@ export class Singleplayer extends Scene {
 
                 if (cellsToOccupy.length === ship.size) {
                     cellsToOccupy.forEach(cell => {
-                        // cell.fillColor = 0xA9A9A9; // Change the color of the cell to blue
+                        cell.fillColor = 0xA9A9A9; // Change the color of the cell to blue
                         cell.isOccupied = true; // Mark the cell as occupied
+                        this.opponentShips.saveCoordinates(ship.name, cell.row, cell.col); // Save the correct coordinates
                     });
                     placed = true;
-                    this.opponentShipsPlaced = true;
+                    this.opponentShips.setShipPlaced(ship.name, true);
                 }
             }
         });
+        this.playerTurn = true; // Switch turn to player
     }
 
     attackCell(cell) {
@@ -182,7 +171,7 @@ export class Singleplayer extends Scene {
         cell.isAlreadyBeenHitten = true; // Mark cell as hitten
 
         // Call opponent's turn after a delay
-        this.time.delayedCall(100, () => {
+        this.time.delayedCall(1000, () => {
             this.opponentAttack();
         });
     }
@@ -223,9 +212,7 @@ export class Singleplayer extends Scene {
                         cell.isAlreadyBeenHitten = true;
                         attacked = true;
                     }
-                } else {
-                    this.lastHit = null;
-                }
+                } else { this.lastHit = null }
 
             } else {
                 while (!attacked) {
@@ -247,12 +234,10 @@ export class Singleplayer extends Scene {
                         }
                         attacked = true;
                     }
-
-                    console.log(cell.isAlreadyBeenHitten)
                 }
             }
         }
-        this.playerTurn = true;
+        this.playerTurn = true; // Switch turn to player
     }
     
 
@@ -261,9 +246,7 @@ export class Singleplayer extends Scene {
         const playerShips = this.playerGrid.getAll().filter(cell => cell.isOccupied).length;
         const opponentShips = this.opponentGrid.getAll().filter(cell => cell.isOccupied).length;
 
-        if (playerShips === 0 || opponentShips === 0) {
-            return true;
-        }
+        if (playerShips === 0 || opponentShips === 0) { return true }
         return false;
     }
 
