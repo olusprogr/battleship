@@ -240,7 +240,6 @@ export class Singleplayer extends Scene {
         this.playerTurn = true; // Switch turn to player
     }
     
-
     checkGameOver() {
         // Check if all ships of one player are sunk
         const playerShips = this.playerGrid.getAll().filter(cell => cell.isOccupied).length;
