@@ -9,13 +9,21 @@ export default class ShipManager {
         ];
     }
 
-    getShips() { return this.ships }
-    getShip(name) { return this.ships.find(ship => ship.name === name) }
-    setShipCoordinates(name, coordinates) { this.ships.find(ship => ship.name === name).coordinates = coordinates }
-    setShipSunk(name, sunk) { this.ships.find(ship => ship.name === name).sunk = sunk }
-    allShipsSunk() { return this.ships.every(ship => ship.sunk) }
-    resetShips() { this.ships.forEach(ship => { ship.coordinates = []; ship.sunk = false; }) }
-    saveCoordinates(ship, row, col) { this.ships.find(s => s.name === ship).coordinates.push({row, col}) }
-    setShipPlaced(name, placed) { this.ships.find(ship => ship.name === name).placed = placed }
-    allShipsPlaced() { return this.ships.every(ship => ship.placed) }
+    getShips() { return this.ships };
+
+    getShip(name) { return this.ships.find(ship => ship.name === name) };
+
+    setShipCoordinates(name, coordinates) { this.ships.find(ship => ship.name === name).coordinates = coordinates };
+
+    setShipSunk(name, sunk) { this.ships.find(ship => ship.name === name).sunk = sunk };
+
+    allShipsSunk() { return this.ships.every(ship => ship.sunk) };
+
+    resetShips() { this.ships.forEach(ship => { ship.coordinates = []; ship.sunk = false; }) };
+
+    saveCoordinates(ship, row, col) { this.ships.find(s => s.name === ship).coordinates.push({row, col}) };
+
+    setShipPlaced(name, placed) { this.ships.find(ship => ship.name === name).placed = placed };
+
+    allShipsPlaced() { return this.ships.every(ship => ship.placed) };
 }

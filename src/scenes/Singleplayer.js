@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 import ShipManager from '../objects/ship';
+import * as components from '../components/Singplayer-UI.js';
 
 export class Singleplayer extends Scene {
     constructor() {
@@ -24,17 +25,8 @@ export class Singleplayer extends Scene {
     }
 
     create() {
-        this.add.image(512, 484, 'war-ship');
-
-        // Add the title
-        this.add.text(512, 100, 'War Ship', {
-            fontFamily: 'Arial Black',
-            fontSize: 80,
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5);
+        components.addImage(this);
+        components.addTitle(this);
 
         // Creating grids for the player and opponent
         const gridSize = 10;  // 10x10 grid
@@ -92,6 +84,7 @@ export class Singleplayer extends Scene {
     }
 
     placeShip(startCell) {
+        if (this.currentShipIndex >= this.playerShips.ships.length) { return }
         const ship = this.playerShips.ships[this.currentShipIndex];
         const cellsToOccupy = [];
 
@@ -249,16 +242,5 @@ export class Singleplayer extends Scene {
         return false;
     }
 
-    endGame() {
-        // Handle end game logic
-        this.add.text(512, 400, 'Game Over', {
-            fontFamily: 'Arial Black',
-            fontSize: 80,
-            color: '#ff0000',
-            stroke: '#000000',
-            strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5);
-        this.scene.pause();
-    }
+    endGame() { components.endGame(this) }
 }
