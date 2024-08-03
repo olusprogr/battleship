@@ -15,7 +15,16 @@ export function addImage(scene) {
     scene.add.image(512, 484, 'war-ship');
 }
 
-export function createGrid(scene, startX, startY, gridSize, cellSize, gridType) {
+export function createGrid(scene, gridType) {
+    // Creating grids for the player and opponent
+    const gridSize = 10;  // 10x10 grid
+    const cellSize = 30;  // Size of each cell in pixels
+    const startY = 200;    // Starting Y position
+    let startX
+
+    if (gridType === 'player') { startX = 200 };
+    if (gridType === 'opponent') { startX = 600 };
+
     const grid = scene.add.container(0, 0);
     for (let row = 0; row < gridSize; row++) {
         for (let col = 0; col < gridSize; col++) {
@@ -40,7 +49,6 @@ export function createGrid(scene, startX, startY, gridSize, cellSize, gridType) 
     }
     return grid;
 }
-
 
 export function endGame(scene) {
     scene.add.rectangle(512, 384, 1024, 768, 0x000000, 0.4);

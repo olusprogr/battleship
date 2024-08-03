@@ -5,6 +5,9 @@ export class MainMenu extends Scene
     constructor ()
     {
         super('MainMenu');
+
+        this.windowWidth = window.innerWidth
+        this.windowsHeight = window.innerHeight
     }
 
     create ()

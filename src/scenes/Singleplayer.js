@@ -28,43 +28,9 @@ export class Singleplayer extends Scene {
         components.addImage(this);
         components.addTitle(this);
 
-        // Creating grids for the player and opponent
-        const gridSize = 10;  // 10x10 grid
-        const cellSize = 30;  // Size of each cell in pixels
-        const playerStartX = 200;   // Starting X position for player grid
-        const opponentStartX = 600; // Starting X position for opponent grid
-        const startY = 200;    // Starting Y position
-
-        // Function to create a grid
-        const createGrid = (startX, gridType) => {
-            const grid = this.add.container(0, 0);
-            for (let row = 0; row < gridSize; row++) {
-                for (let col = 0; col < gridSize; col++) {
-                    const x = startX + col * cellSize;
-                    const y = startY + row * cellSize;
-                    const cell = this.add.rectangle(x, y, cellSize, cellSize, 0x808080).setOrigin(0);
-                    cell.setStrokeStyle(1, 0x000000);  // Add a border to the cells
-                    cell.setInteractive();  // Make the cell interactive
-                    cell.row = row;
-                    cell.col = col;
-                    cell.gridType = gridType; // Indicate which grid the cell belongs to
-                    cell.isOccupied = false; // Indicate if the cell is occupied by a ship
-                    cell.isAlreadyBeenHitten = false; // Indicate if the cell already has been hitten by a missle
-
-                    // Handle pointer down (click) event
-                    cell.on('pointerdown', () => {
-                        this.cellClicked(cell);
-                    });
-
-                    grid.add(cell);
-                }
-            }
-            return grid;
-        };
-
         // Create player and opponent grids
-        this.playerGrid = createGrid(playerStartX, 'player');
-        this.opponentGrid = createGrid(opponentStartX, 'opponent');
+        this.playerGrid = components.createGrid(this, 'player');
+        this.opponentGrid = components.createGrid(this, 'opponent');
 
         // Listen for the 'R' key to rotate the ship
         this.input.keyboard.on('keydown-R', () => {
@@ -98,7 +64,9 @@ export class Singleplayer extends Scene {
             if (!cell || cell.isOccupied) { return }
             cellsToOccupy.push(cell);
 
-            this.playerShips.saveCoordinates(ship.name, row, col); // here
+            // Save the coordinates and orientation of the ship
+            this.playerShips.saveCoordinates(ship.name, row, col);
+            this.playerShips.setOrientation(ship.name, this.isVertical ? 'vertical' : 'horizontal');
         }
 
         // Place the ship
@@ -158,8 +126,8 @@ export class Singleplayer extends Scene {
             cell.fillColor = 0x0000ff; // Miss
         } else {
             cell.fillColor = 0xff0000; // Hit
+            cell.isOccupied = false; // Mark cell as attacked
         }
-        cell.isOccupied = false; // Mark cell as attacked
         this.playerTurn = false; // Switch turn to opponent
         cell.isAlreadyBeenHitten = true; // Mark cell as hitten
 

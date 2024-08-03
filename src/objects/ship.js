@@ -26,4 +26,6 @@ export default class ShipManager {
     setShipPlaced(name, placed) { this.ships.find(ship => ship.name === name).placed = placed };
 
     allShipsPlaced() { return this.ships.every(ship => ship.placed) };
+
+    setOrientation(name, orientation) { this.ships.find(ship => ship.name === name).orientation = orientation }
 }
