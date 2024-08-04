@@ -53,6 +53,7 @@ export function createGrid(scene, gridType) {
             grid.add(cell);
         }
     }
+    grid.matrix = [10, 10]
     return grid;
 }
 

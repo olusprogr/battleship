@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
-import ShipManager from '../objects/ship';
+import ShipManager from '../objects/ship.js';
+import BoardManager from '../objects/board.js';
 import * as components from '../components/Singplayer-UI.js';
 
 export class Singleplayer extends Scene {
@@ -31,6 +32,8 @@ export class Singleplayer extends Scene {
         // Create player and opponent grids
         this.playerGrid = components.createGrid(this, 'player');
         this.opponentGrid = components.createGrid(this, 'opponent');
+        this.playerBoard = new BoardManager(this.playerGrid);
+        this.opponentBoard = new BoardManager(this.opponentGrid);
 
         // Listen for the 'R' key to rotate the ship
         this.input.keyboard.on('keydown-R', () => {
@@ -64,24 +67,29 @@ export class Singleplayer extends Scene {
 
             // Check if the cell is within bounds and not occupied
             const cell = this.getCellAt(row, col, this.playerGrid);
-            if (!cell || cell.isOccupied) { return }
+            if (!cell || cell.isOccupied) { return };
             cellsToOccupy.push(cell);
 
             // Save the coordinates and orientation of the ship
             this.playerShips.saveCoordinates(ship.name, row, col);
-            this.playerShips.setOrientation(ship.name, this.isVertical ? 'vertical' : 'horizontal');
+            this.playerBoard.printBoard();
         }
+
 
         // Place the ship
         cellsToOccupy.forEach(cell => {
             cell.fillColor = 0x00ff00; // Change the color of the cell to green
             cell.isOccupied = true; // Mark the cell as occupied
-            this.playerShips.setShipPlaced(ship.name, true); // here
         });
 
         // Move to the next ship
+        console.log(startCell.row, startCell.col)
+        this.playerShips.setOrientation(ship.name, this.isVertical ? 'vertical' : 'horizontal');
+        // this.playerBoard.placeShip(startCell.row, startCell.col, ship.size, this.isVertical);
+        this.playerShips.setShipPlaced(ship.name, true);
         this.currentShipIndex++;
         if (this.playerShips.allShipsPlaced()) { this.playerTurn = false }
+        console.log(this.playerShips)
     }
 
     getCellAt(row, col, grid) {
