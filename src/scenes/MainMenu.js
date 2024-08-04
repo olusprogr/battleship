@@ -12,12 +12,15 @@ export class MainMenu extends Scene
 
     create ()
     {
+        const centerX = this.windowWidth / 2;
+        const centerY = this.windowHeight / 2;
+
         // Added basic main menu items
-        this.add.image(512, 484, 'war-ship');
+        this.add.image(512, 584, 'war-ship');
         // this.add.image(512, 300, 'logo');
 
         // Settings button and functionality
-        const settingsButton = this.add.image(1000, 50, 'settings')
+        const settingsButton = this.add.image(this.windowWidth - 50 , 50, 'settings')
             .setInteractive()
             .setScale(0.5);
 
@@ -27,7 +30,7 @@ export class MainMenu extends Scene
 
 
         // Creating a more visually appealing "War Ship" title with a metallic, grungy black and white style
-        const titleText = this.add.text(512, 200, 'War Ship', {
+        const titleText = this.add.text(centerX, 200, 'War Ship', {
             fontFamily: 'Arial Black', 
             fontSize: 80, 
             color: '#ffffff',
@@ -46,7 +49,6 @@ export class MainMenu extends Scene
         // Adding shadow to the text
         titleText.setShadow(5, 5, '#1a1a1a', 5, true, true);
 
-
         const createButtonBackground = (x, y, width, height) => {
             const background = this.add.graphics();
             background.fillStyle(0x555555, 0.5); // Gray color with 0.5 transparency
@@ -54,10 +56,9 @@ export class MainMenu extends Scene
             return background;
         };
 
-
         // Singleplayer button settings
-        createButtonBackground(512, 350, 200, 60);
-        const singleplayerButton = this.add.text(512, 350, 'Singleplayer', {
+        createButtonBackground(centerX, 350, 200, 60);
+        const singleplayerButton = this.add.text(centerX, 350, 'Singleplayer', {
             fontFamily: 'Arial', fontSize: 32, color: '#cccccc',
             stroke: '#000000', strokeThickness: 4
         }).setOrigin(0.5).setInteractive();
@@ -77,11 +78,9 @@ export class MainMenu extends Scene
             this.scene.start('Singleplayer');
         });
 
-
-
         // Multiplayer button settings
-        createButtonBackground(512, 450, 200, 60);
-        const multiplayerButton = this.add.text(512, 450, 'Multiplayer', {
+        createButtonBackground(centerX, 450, 450, 60);
+        const multiplayerButton = this.add.text(centerX, 450, 'Multiplayer (Not available yet)', {
             fontFamily: 'Arial', fontSize: 32, color: '#cccccc',
             stroke: '#000000', strokeThickness: 4
         }).setOrigin(0.5).setInteractive();
@@ -102,7 +101,7 @@ export class MainMenu extends Scene
         });
 
 
-        const creatorText = this.add.text(512, 700, 'Made by: Vicente, Olivier', {
+        const creatorText = this.add.text(centerX, 600, 'Made by: Vicente, Olivier', {
             fontFamily: 'Arial Black', 
             fontSize: 20, 
             color: '#ffffff',
@@ -110,23 +109,5 @@ export class MainMenu extends Scene
             strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
-
-
-
-
-
-        // multiplayerButton.on('pointerdown', () => {
-        //     this.scene.start('MultiplayerGame');
-        // });
-
-        // singleplayerButton.on('pointerdown', () => {
-        //     this.scene.start('SingleplayerGame');
-        // });
-
-        // this.input.once('pointerdown', () => {
-
-        //     this.scene.start('Game');
-
-        // });
     }
 }

@@ -36,6 +36,9 @@ export class Singleplayer extends Scene {
         this.input.keyboard.on('keydown-R', () => {
             this.isVertical = !this.isVertical;
         });
+
+        components.addRestartButton(this);
+        components.addBackToMenuButton(this);
     }
 
     cellClicked(cell) {
@@ -107,7 +110,7 @@ export class Singleplayer extends Scene {
 
                 if (cellsToOccupy.length === ship.size) {
                     cellsToOccupy.forEach(cell => {
-                        cell.fillColor = 0xA9A9A9; // Change the color of the cell to blue
+                        // cell.fillColor = 0xA9A9A9; // Change the color of the cell to blue
                         cell.isOccupied = true; // Mark the cell as occupied
                         this.opponentShips.saveCoordinates(ship.name, cell.row, cell.col); // Save the correct coordinates
                     });

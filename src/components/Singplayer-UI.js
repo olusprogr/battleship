@@ -1,7 +1,13 @@
 // src/components/UIComponents.js
 
+const windowWidth = window.innerWidth;
+const windowHeight = window.innerHeight;
+
+const windowsWidthCentered = windowWidth / 2;
+const windowsHeightCentered = windowHeight / 2;
+
 export function addTitle(scene) {
-    scene.add.text(512, 100, 'War Ship', {
+    scene.add.text(windowsWidthCentered, 100, 'War Ship', {
         fontFamily: 'Arial Black',
         fontSize: 80,
         color: '#ffffff',
@@ -51,10 +57,10 @@ export function createGrid(scene, gridType) {
 }
 
 export function endGame(scene) {
-    scene.add.rectangle(512, 384, 1024, 768, 0x000000, 0.4);
+    scene.add.rectangle(windowsWidthCentered, 384, 1024, 768, 0x000000, 0.4);
 
     // Handle end game logic
-    scene.add.text(512, 400, 'Game Over', {
+    scene.add.text(windowsWidthCentered, 400, 'Game Over', {
         fontFamily: 'Arial Black',
         fontSize: 80,
         color: '#ff0000',
@@ -66,13 +72,21 @@ export function endGame(scene) {
 }
 
 export function addRestartButton(scene) {
-    scene.add.text(400, 200, 'Game Over', { fontSize: '64px', fill: '#fff' }).setOrigin(0.5);
-
-    const restartButton = scene.add.text(400, 400, 'Restart', { fontSize: '32px', fill: '#0f0' })
+    const restartButton = scene.add.text(windowsWidthCentered, 600, 'Restart', { fontSize: '32px', fill: '#0f0' })
         .setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
-        .on('pointerdown', () => this.scene.restart());
+        .on('pointerdown', () => scene.scene.restart());
 
     restartButton.on('pointerover', () => restartButton.setStyle({ fill: '#ff0' }));
     restartButton.on('pointerout', () => restartButton.setStyle({ fill: '#0f0' }));
+}
+
+export function addBackToMenuButton(scene) {
+    const backToMenuButton = scene.add.text(windowsWidthCentered - 400, 100, 'Back to Menu', { fontSize: '30px', fill: '#0f0' })
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true })
+        .on('pointerdown', () => scene.scene.start('MainMenu'));
+
+    backToMenuButton.on('pointerover', () => backToMenuButton.setStyle({ fill: '#ff0' }));
+    backToMenuButton.on('pointerout', () => backToMenuButton.setStyle({ fill: '#0f0' }));
 }
