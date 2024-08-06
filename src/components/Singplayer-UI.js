@@ -21,15 +21,52 @@ export function addImage(scene) {
     scene.add.image(512, 484, 'war-ship');
 }
 
+function distributeFrames(totalWidth, ...frameWidths) {
+    const totalFramesWidth = frameWidths.reduce((acc, width) => acc + width, 0);
+    const restSpace = totalWidth - totalFramesWidth;
+
+    if (restSpace < 0) {
+        throw new Error("Total width is too small for the given frame widths.");
+    }
+
+    // Number of gaps is the number of frames plus two (one at each end)
+    const numberOfGaps = frameWidths.length + 1;
+
+    // Calculate the spacing, including space at the beginning and end
+    return restSpace / numberOfGaps;
+}
+
+
+
+
 export function createGrid(scene, gridType) {
     // Creating grids for the player and opponent
     const gridSize = 10;  // 10x10 grid
-    const cellSize = 30;  // Size of each cell in pixels
-    const startY = 200;    // Starting Y position
-    let startX
+    let cellSize = 30;  // Size of each cell in pixels
+    let startX;
+    let startY = 200;
+    let asw;
 
-    if (gridType === 'player') { startX = 200 };
-    if (gridType === 'opponent') { startX = 600 };
+    let gridTotal = cellSize * gridSize; // 300
+    if (windowWidth < 768) {
+        if (gridType === 'player') {
+            startX = (windowWidth - gridTotal) / 2;
+            startY = 100;
+        }
+
+        else {
+            startX = (windowWidth - gridTotal) / 2;
+            startY = 500;
+        }
+    } else {
+        const frameWidths = [gridTotal, gridTotal]; // Breiten der Frames
+        asw = distributeFrames(windowWidth, ...frameWidths);
+
+        if (gridType === 'player') { startX = asw }
+        else { startX = windowWidth - asw - gridTotal; }
+    }
+
+    console.log(asw)
 
     const grid = scene.add.container(0, 0);
     for (let row = 0; row < gridSize; row++) {
@@ -58,7 +95,7 @@ export function createGrid(scene, gridType) {
 }
 
 export function endGame(scene) {
-    scene.add.rectangle(windowsWidthCentered, 384, 1024, 768, 0x000000, 0.4);
+    scene.add.rectangle(windowsWidthCentered, windowsHeightCentered, windowWidth, windowHeight, 0x000000, 0.4);
 
     // Handle end game logic
     scene.add.text(windowsWidthCentered, 400, 'Game Over', {
@@ -72,11 +109,11 @@ export function endGame(scene) {
     scene.scene.pause();
 }
 
-export function addRestartButton(scene) {
+export function addRestartButton(scene, callback) {
     const restartButton = scene.add.text(windowsWidthCentered, 600, 'Restart', { fontSize: '32px', fill: '#0f0' })
         .setOrigin(0.5)
         .setInteractive({ useHandCursor: true })
-        .on('pointerdown', () => scene.scene.restart());
+        .on('pointerdown', () => scene.scene.restart(), scene.restartReady = true);
 
     restartButton.on('pointerover', () => restartButton.setStyle({ fill: '#ff0' }));
     restartButton.on('pointerout', () => restartButton.setStyle({ fill: '#0f0' }));

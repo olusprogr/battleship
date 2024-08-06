@@ -8,6 +8,7 @@ export class MainMenu extends Scene
 
         this.windowWidth = window.innerWidth
         this.windowsHeight = window.innerHeight
+        this.mobile = false
     }
 
     create ()
@@ -15,9 +16,16 @@ export class MainMenu extends Scene
         const centerX = this.windowWidth / 2;
         const centerY = this.windowHeight / 2;
 
+        let heightOfBackground = 700;
+        if (this.windowWidth < 768) { this.mobile = true; heightOfBackground = 300; }
+
         // Added basic main menu items
-        this.add.image(512, 584, 'war-ship');
-        // this.add.image(512, 300, 'logo');
+        let background = this.add.image(centerX, heightOfBackground, 'war-ship');
+
+        // Scale the background image down a bit to show more of it on smaller screens
+        const scale = this.windowWidth < 768 ? 0.5 : 1; // If window width is less than 768px (common mobile width), scale to 80%
+        background.setScale(scale);
+        background.setOrigin(0.5);
 
         // Settings button and functionality
         const settingsButton = this.add.image(this.windowWidth - 50 , 50, 'settings')
@@ -32,7 +40,7 @@ export class MainMenu extends Scene
         // Creating a more visually appealing "War Ship" title with a metallic, grungy black and white style
         const titleText = this.add.text(centerX, 200, 'War Ship', {
             fontFamily: 'Arial Black', 
-            fontSize: 80, 
+            fontSize: Math.min(this.windowWidth * 0.15, 80), 
             color: '#ffffff',
             stroke: '#000000', 
             strokeThickness: 8,
@@ -59,8 +67,11 @@ export class MainMenu extends Scene
         // Singleplayer button settings
         createButtonBackground(centerX, 350, 200, 60);
         const singleplayerButton = this.add.text(centerX, 350, 'Singleplayer', {
-            fontFamily: 'Arial', fontSize: 32, color: '#cccccc',
-            stroke: '#000000', strokeThickness: 4
+            fontFamily: 'Arial',
+            fontSize: Math.min(this.windowWidth * 0.05, 32),
+            color: '#cccccc',
+            stroke: '#000000',
+            strokeThickness: 4
         }).setOrigin(0.5).setInteractive();
         // In case of adding further functionality to the button just add it here under the pointerdown events
 
@@ -81,8 +92,11 @@ export class MainMenu extends Scene
         // Multiplayer button settings
         createButtonBackground(centerX, 450, 450, 60);
         const multiplayerButton = this.add.text(centerX, 450, 'Multiplayer (Not available yet)', {
-            fontFamily: 'Arial', fontSize: 32, color: '#cccccc',
-            stroke: '#000000', strokeThickness: 4
+            fontFamily: 'Arial',
+            fontSize: Math.min(this.windowWidth * 0.05, 32), 
+            color: '#cccccc',
+            stroke: '#000000',
+            strokeThickness: 4
         }).setOrigin(0.5).setInteractive();
         // In case of adding further functionality to the button just add it here under the pointerdown events
 

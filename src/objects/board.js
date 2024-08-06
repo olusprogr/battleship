@@ -13,7 +13,6 @@ export default class BoardManager {
         this.width = this.board.matrix[0];
         this.height = this.board.matrix[1];
         this.cells = this.createBoard();
-        this.printBoard()
     }
 
     createBoard() {
@@ -28,23 +27,9 @@ export default class BoardManager {
         return cells;
     }
 
-    placeShip(x, y, length, vertical) {
-        if (vertical) {
-            if (x + length > this.height) { return false };
-            for (let i = 0; i < length; i++) {
-                if (this.cells[y + i][x].state !== 'empty') { return false };
-            }
-            for (let i = 0; i < length; i++) {
-                this.cells[y + i][x].state = 'ship';
-            }
-        } else {
-            if (y + length > this.width) { return false };
-            for (let i = 0; i < length; i++) {
-                if (this.cells[y][x + i].state !== 'empty') { return false };
-            }
-            for (let i = 0; i < length; i++) {
-                this.cells[y][x + i].state = 'ship';
-            }
+    placeShip(coordinates) {
+        for (const { row, col } of coordinates) {
+            this.cells[row][col].state = 'ship';
         }
     }
 
@@ -73,7 +58,7 @@ export default class BoardManager {
             }).join(' ');
             list.push(rowString)
         }
-        console.log(list)
+        console.log(list.join('\n'));
     }
 }
 

@@ -14,6 +14,7 @@ export class Singleplayer extends Scene {
         this.isVertical = false; // Orientation of the ship (horizontal/vertical)
         this.playerTurn = true; // Track whose turn it is
         this.lastHit = null; // Last hit of the robot
+        this.restartReady = false; // Track if the game is ready to restart
     }
 
     update() {
@@ -72,9 +73,7 @@ export class Singleplayer extends Scene {
 
             // Save the coordinates and orientation of the ship
             this.playerShips.saveCoordinates(ship.name, row, col);
-            this.playerBoard.printBoard();
         }
-
 
         // Place the ship
         cellsToOccupy.forEach(cell => {
@@ -85,11 +84,11 @@ export class Singleplayer extends Scene {
         // Move to the next ship
         console.log(startCell.row, startCell.col)
         this.playerShips.setOrientation(ship.name, this.isVertical ? 'vertical' : 'horizontal');
-        // this.playerBoard.placeShip(startCell.row, startCell.col, ship.size, this.isVertical);
+        this.playerBoard.placeShip(this.playerShips.getShip(ship.name).coordinates);
         this.playerShips.setShipPlaced(ship.name, true);
         this.currentShipIndex++;
-        if (this.playerShips.allShipsPlaced()) { this.playerTurn = false }
-        console.log(this.playerShips)
+        if (this.playerShips.allShipsPlaced()) { this.playerTurn = false };
+        this.playerBoard.printBoard();
     }
 
     getCellAt(row, col, grid) {
@@ -124,6 +123,7 @@ export class Singleplayer extends Scene {
                     });
                     placed = true;
                     this.opponentShips.setShipPlaced(ship.name, true);
+                    this.opponentBoard.placeShip(this.opponentShips.getShip(ship.name).coordinates);
                 }
             }
         });
@@ -135,6 +135,7 @@ export class Singleplayer extends Scene {
         if (cell.isAlreadyBeenHitten) {return}
         if (!cell.isOccupied) {
             cell.fillColor = 0x0000ff; // Miss
+            this.opponentBoard.receiveAttack(cell.row, cell.col);
         } else {
             cell.fillColor = 0xff0000; // Hit
             cell.isOccupied = false; // Mark cell as attacked
@@ -217,7 +218,7 @@ export class Singleplayer extends Scene {
         const playerShips = this.playerGrid.getAll().filter(cell => cell.isOccupied).length;
         const opponentShips = this.opponentGrid.getAll().filter(cell => cell.isOccupied).length;
 
-        if (playerShips === 0 || opponentShips === 0) { return true }
+        if (playerShips === 0 || opponentShips === 0 && this.restartReady) { return true }
         return false;
     }
 
