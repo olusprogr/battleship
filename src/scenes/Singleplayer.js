@@ -43,6 +43,8 @@ export class Singleplayer extends Scene {
 
         components.addRestartButton(this);
         components.addBackToMenuButton(this);
+
+        // window.addEventListener('resize', () => resize.call(this));
     }
 
     cellClicked(cell) {
@@ -132,7 +134,7 @@ export class Singleplayer extends Scene {
 
     attackCell(cell) {
         // Handle the attack on the opponent's grid
-        if (cell.isAlreadyBeenHitten) {return}
+        if (cell.isAlreadyBeenHitten || !this.playerShips.allShipsPlaced()) {return}
         if (!cell.isOccupied) {
             cell.fillColor = 0x0000ff; // Miss
             this.opponentBoard.receiveAttack(cell.row, cell.col);
