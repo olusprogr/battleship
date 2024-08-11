@@ -15,12 +15,52 @@ export class MainMenu extends Scene
     {
         const centerX = this.windowWidth / 2;
         const centerY = this.windowHeight / 2;
+        let sensibility = 1;
 
         let heightOfBackground = 700;
-        if (this.windowWidth < 768) { this.mobile = true; heightOfBackground = 300; }
+        if (this.windowWidth < 768) {
+            this.mobile = true;
+            heightOfBackground = 300;
+            sensibility = 0.5;
+        }
 
         // Added basic main menu items
         let background = this.add.image(centerX, heightOfBackground, 'war-ship');
+
+
+        function randomFloatTween() {
+            // Randomly choose a direction for x and y movement
+            function getRandomOffset() {
+                let offset;
+                do {
+                    offset = Phaser.Math.Between(-15, 15);
+                } while (offset >= -5 && offset <= 5);
+                return offset;
+            }
+            
+            let randomX = getRandomOffset() * sensibility;
+            let randomY = getRandomOffset() * sensibility;
+            
+        
+            this.tweens.add({
+                targets: background,
+                x: background.x + randomX,  // move randomly left or right
+                y: background.y + randomY,  // move randomly up or down
+                duration: Phaser.Math.Between(600, 800), // random duration between 1 and 2 seconds
+                yoyo: true,
+                repeat: 0,
+                ease: 'Sine.easeInOut',
+                onComplete: randomFloatTween, // repeat the tween with a new random direction
+                callbackScope: this,
+                onComplete: () => {
+                    // Introduce a 200ms pause before the next movement
+                    this.time.delayedCall(30, randomFloatTween, [], this);
+                },
+            });
+        }
+        
+        // Start the floating animation
+        randomFloatTween.call(this);
 
         // Scale the background image down a bit to show more of it on smaller screens
         const scale = this.windowWidth < 768 ? 0.5 : 1; // If window width is less than 768px (common mobile width), scale to 80%
