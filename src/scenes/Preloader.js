@@ -16,6 +16,8 @@ export class Preloader extends Scene
         const music = this.sound.add('background-music');
         music.play({loop: true});
 
+        this.game.music = music;
+
         //  A simple progress bar. This is the outline of the bar.
         this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
 

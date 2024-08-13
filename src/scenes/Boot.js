@@ -14,6 +14,7 @@ export class Boot extends Scene
 
         this.load.image('war-ship', 'assets/war-ship-bg.jpeg');
         this.load.image('background', 'assets/bg.png');
+        this.load.image('settings-button', 'assets/settings-button.png');
 
         this.load.audio('background-music', 'assets/sounds/background-music.mp3');
     }

@@ -27,9 +27,13 @@ export class MainMenu extends Scene
         // Added basic main menu items
         let background = this.add.image(centerX, heightOfBackground, 'war-ship');
 
+        let isAnimationRunning = true;
+        let tweens;
+        let delay;
 
         function randomFloatTween() {
-            // Randomly choose a direction for x and y movement
+            if (!isAnimationRunning) { return }
+
             function getRandomOffset() {
                 let offset;
                 do {
@@ -42,7 +46,7 @@ export class MainMenu extends Scene
             let randomY = getRandomOffset() * sensibility;
             
         
-            this.tweens.add({
+            tweens = this.tweens.add({
                 targets: background,
                 x: background.x + randomX,  // move randomly left or right
                 y: background.y + randomY,  // move randomly up or down
@@ -50,11 +54,9 @@ export class MainMenu extends Scene
                 yoyo: true,
                 repeat: 0,
                 ease: 'Sine.easeInOut',
-                onComplete: randomFloatTween, // repeat the tween with a new random direction
                 callbackScope: this,
                 onComplete: () => {
-                    // Introduce a 200ms pause before the next movement
-                    this.time.delayedCall(30, randomFloatTween, [], this);
+                    delay = this.time.delayedCall(30, randomFloatTween, [], this);
                 },
             });
         }
@@ -68,14 +70,126 @@ export class MainMenu extends Scene
         background.setOrigin(0.5);
 
         // Settings button and functionality
-        const settingsButton = this.add.image(this.windowWidth - 50 , 50, 'settings')
-            .setInteractive()
-            .setScale(0.5);
-
+        const settingsButton = this.add.image(this.windowWidth - 50 , 50, 'settings-button')
+        .setInteractive()
+        .setScale(0.1);
+        
         settingsButton.on('pointerdown', () => {
             console.log('Settings-Button geklickt');
-        });
+            
+            const settingsWindow = this.add.graphics();
+            settingsWindow.fillStyle(0x808080, 0.8);
+            settingsWindow.fillRoundedRect(settingsButton.x - 200, settingsButton.y + 50, 200, 300, 8);
 
+            const closeButton = this.add.text(settingsButton.x - 50, settingsButton.y + 55, 'Close', {
+                fontFamily: 'Arial',
+                fontSize: 15,
+                color: '#ffffff',
+                stroke: '#ff0000',
+                strokeThickness: 4
+            }).setInteractive();
+
+            let musicIsChecked = false;
+
+            const checkbox = this.add.rectangle(1030, 160, 20, 20, 0xffffff)
+            .setStrokeStyle(2, 0x000000)
+            .setInteractive();
+
+            const checkboxLabel = this.add.text(870, 150, 'Background music', {
+                fontFamily: 'Arial',
+                fontSize: '15px',
+                color: '#ffffff'
+            });
+
+            const checkmark = this.add.text(1022, 150, '✓', {
+                fontFamily: 'Arial',
+                fontSize: '20px',
+                color: '#00ff00'
+            });
+            checkmark.setVisible(false);
+
+            checkbox.on('pointerdown', () => {
+                if (this.game.music) {
+                    if (musicIsChecked) {
+                        this.game.music.resume();
+                        musicIsChecked = !musicIsChecked;
+                        checkmark.setVisible(musicIsChecked);
+                    } else {
+                        this.game.music.pause();
+                        musicIsChecked = !musicIsChecked;
+                        checkmark.setVisible(musicIsChecked);
+                    }
+                }
+            });
+
+            let animationIsChecked = true;
+
+            const checkboxLabelAnimation = this.add.text(870, 200, 'Animation', {
+                fontFamily: 'Arial',
+                fontSize: '15px',
+                color: '#ffffff'
+            });
+
+            const checkboxAnimation = this.add.rectangle(1030, 210, 20, 20, 0xffffff)
+            .setStrokeStyle(2, 0x000000)
+            .setInteractive();
+
+            const checkmarkAnimation = this.add.text(1022, 200, '✓', {
+                fontFamily: 'Arial',
+                fontSize: '20px',
+                color: '#00ff00'
+            });
+
+            checkboxAnimation.on('pointerdown', () => {
+                if (tweens) {
+                    console.log('Animation-Checkbox geklickt');
+                    isAnimationRunning = !isAnimationRunning;
+                    if (animationIsChecked) {
+                        tweens.remove();
+                        delay = null;
+                        animationIsChecked = !animationIsChecked;
+                        checkmarkAnimation.setVisible(animationIsChecked);
+                    } else {
+                        isAnimationRunning = true;
+                        randomFloatTween.call(this);
+                        animationIsChecked = !animationIsChecked;
+                        checkmarkAnimation.setVisible(animationIsChecked);
+                    }
+                }
+            });
+
+
+            closeButton.on('pointerdown', () => {
+                closeButton.destroy();
+                settingsWindow.destroy();
+
+                checkboxLabel.destroy();
+                checkbox.destroy();
+                checkmark.destroy();
+
+                checkboxLabelAnimation.destroy();
+                checkboxAnimation.destroy();
+                checkmarkAnimation.destroy();
+            });
+        });
+        
+        settingsButton.on('pointerover', () => {
+            this.tweens.add({
+                targets: settingsButton,
+                angle: 100,
+                duration: 400,
+                ease: 'Power2',
+            });
+        });
+        
+        settingsButton.on('pointerout', () => {
+            this.tweens.add({
+                targets: settingsButton,
+                angle: 0,
+                duration: 400,
+                ease: 'Power2',
+            });
+        });
 
         // Creating a more visually appealing "War Ship" title with a metallic, grungy black and white style
         const titleText = this.add.text(centerX, 200, 'War Ship', {
@@ -155,7 +269,7 @@ export class MainMenu extends Scene
         });
 
 
-        const creatorText = this.add.text(centerX, 600, 'Made by: Vicente, Olivier', {
+        this.add.text(centerX, 600, 'Made by: Vicente, Olivier', {
             fontFamily: 'Arial Black', 
             fontSize: 20, 
             color: '#ffffff',
