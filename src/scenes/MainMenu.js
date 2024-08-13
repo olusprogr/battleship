@@ -80,7 +80,7 @@ export class MainMenu extends Scene
             const settingsWindow = this.add.graphics();
             settingsWindow.fillStyle(0x808080, 0.8);
             settingsWindow.fillRoundedRect(settingsButton.x - 200, settingsButton.y + 50, 200, 300, 8);
-
+        
             const closeButton = this.add.text(settingsButton.x - 50, settingsButton.y + 55, 'Close', {
                 fontFamily: 'Arial',
                 fontSize: 15,
@@ -88,90 +88,86 @@ export class MainMenu extends Scene
                 stroke: '#ff0000',
                 strokeThickness: 4
             }).setInteractive();
-
-            let musicIsChecked = false;
-
+        
+            let musicIsChecked = true;
+        
             const checkbox = this.add.rectangle(1030, 160, 20, 20, 0xffffff)
-            .setStrokeStyle(2, 0x000000)
-            .setInteractive();
-
+                .setStrokeStyle(2, 0x000000)
+                .setInteractive();
+        
             const checkboxLabel = this.add.text(870, 150, 'Background music', {
                 fontFamily: 'Arial',
                 fontSize: '15px',
                 color: '#ffffff'
             });
-
+        
             const checkmark = this.add.text(1022, 150, '✓', {
                 fontFamily: 'Arial',
                 fontSize: '20px',
                 color: '#00ff00'
-            });
-            checkmark.setVisible(false);
-
+            }).setVisible(musicIsChecked);
+        
             checkbox.on('pointerdown', () => {
                 if (this.game.music) {
+                    musicIsChecked = !musicIsChecked;
+                    checkmark.setVisible(musicIsChecked);
+        
                     if (musicIsChecked) {
                         this.game.music.resume();
-                        musicIsChecked = !musicIsChecked;
-                        checkmark.setVisible(musicIsChecked);
                     } else {
                         this.game.music.pause();
-                        musicIsChecked = !musicIsChecked;
-                        checkmark.setVisible(musicIsChecked);
                     }
                 }
             });
-
+        
             let animationIsChecked = true;
-
+        
             const checkboxLabelAnimation = this.add.text(870, 200, 'Animation', {
                 fontFamily: 'Arial',
                 fontSize: '15px',
                 color: '#ffffff'
             });
-
+        
             const checkboxAnimation = this.add.rectangle(1030, 210, 20, 20, 0xffffff)
-            .setStrokeStyle(2, 0x000000)
-            .setInteractive();
-
+                .setStrokeStyle(2, 0x000000)
+                .setInteractive();
+        
             const checkmarkAnimation = this.add.text(1022, 200, '✓', {
                 fontFamily: 'Arial',
                 fontSize: '20px',
                 color: '#00ff00'
-            });
-
+            }).setVisible(animationIsChecked);
+        
             checkboxAnimation.on('pointerdown', () => {
-                if (tweens) {
-                    console.log('Animation-Checkbox geklickt');
-                    isAnimationRunning = !isAnimationRunning;
-                    if (animationIsChecked) {
-                        tweens.remove();
+                isAnimationRunning = !isAnimationRunning;
+                animationIsChecked = !animationIsChecked;
+                checkmarkAnimation.setVisible(animationIsChecked);
+        
+                if (!isAnimationRunning && tweens) {
+                    tweens.remove();
+                    if (delay) {
+                        delay.remove();
                         delay = null;
-                        animationIsChecked = !animationIsChecked;
-                        checkmarkAnimation.setVisible(animationIsChecked);
-                    } else {
-                        isAnimationRunning = true;
-                        randomFloatTween.call(this);
-                        animationIsChecked = !animationIsChecked;
-                        checkmarkAnimation.setVisible(animationIsChecked);
                     }
+                } else {
+                    randomFloatTween.call(this);
                 }
             });
-
-
+        
             closeButton.on('pointerdown', () => {
                 closeButton.destroy();
                 settingsWindow.destroy();
-
+        
                 checkboxLabel.destroy();
                 checkbox.destroy();
                 checkmark.destroy();
-
+        
                 checkboxLabelAnimation.destroy();
                 checkboxAnimation.destroy();
                 checkmarkAnimation.destroy();
             });
         });
+        
         
         settingsButton.on('pointerover', () => {
             this.tweens.add({
