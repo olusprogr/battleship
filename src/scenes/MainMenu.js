@@ -28,6 +28,7 @@ export class MainMenu extends Scene
         let background = this.add.image(centerX, heightOfBackground, 'war-ship');
 
         let isAnimationRunning = true;
+        let settingsButtonCliked = false;
         let tweens;
         let delay;
 
@@ -75,7 +76,8 @@ export class MainMenu extends Scene
         .setScale(0.1);
         
         settingsButton.on('pointerdown', () => {
-            console.log('Settings-Button geklickt');
+            if (settingsButtonCliked) { return }
+            settingsButtonCliked = true;
             
             const settingsWindow = this.add.graphics();
             settingsWindow.fillStyle(0x808080, 0.8);
