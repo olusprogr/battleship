@@ -98,7 +98,7 @@ export function singleplayerButton(scene) {
     });
 
     singleplayerButton.on('pointerdown', () => {
-        this.scene.start('Singleplayer');
+        scene.scene.start('Singleplayer');
     });
 }
 
@@ -141,13 +141,21 @@ export function settingsButtonAndFunctionality(scene) {
     .setInteractive()
     .setScale(0.1);
 
+    let settingsButtonX = settingsButton.x - 200;
+    let settingsButtonY = settingsButton.y + 50;
+
+    let settingsWindowX = 200;
+    let settingsWindowY = 300;
+
     settingsButton.on('pointerdown', () => {
         if (settingsButtonCliked) { return }
         settingsButtonCliked = true;
         
         const settingsWindow = scene.add.graphics();
         settingsWindow.fillStyle(0x808080, 0.8);
-        settingsWindow.fillRoundedRect(settingsButton.x - 200, settingsButton.y + 50, 200, 300, 8);
+        settingsWindow.fillRoundedRect(settingsButtonX, settingsButtonY, settingsWindowX, settingsWindowY, 8);
+
+        console.log(settingsButton.x, settingsButton.y);
     
         const closeButton = scene.add.text(settingsButton.x - 50, settingsButton.y + 55, 'Close', {
             fontFamily: 'Arial',
@@ -181,9 +189,9 @@ export function settingsButtonAndFunctionality(scene) {
                 checkmark.setVisible(musicIsChecked);
     
                 if (musicIsChecked) {
-                    this.game.music.resume();
+                    scene.game.music.resume();
                 } else {
-                    this.game.music.pause();
+                    scene.game.music.pause();
                 }
             }
         });
