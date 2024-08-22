@@ -14,10 +14,11 @@ if (windowsWidth < 768) {
     sensibility = 0.5;
 }
 
-let isAnimationRunning = true;
+let isAnimationRunning = false;
 let settingsButtonCliked = false;
 let tweens;
 let delay;
+let stopped = false;
 
 let background;
 
@@ -105,6 +106,7 @@ export function singleplayerButton(scene) {
 export function randomFloatTween(scene) {
     function action() {
         if (!isAnimationRunning) { return }
+        if (stopped) { return }
 
         function getRandomOffset() {
             let offset;
@@ -116,8 +118,7 @@ export function randomFloatTween(scene) {
         
         let randomX = getRandomOffset() * sensibility;
         let randomY = getRandomOffset() * sensibility;
-        
-    
+
         tweens = scene.tweens.add({
             targets: background,
             x: background.x + randomX,
@@ -128,12 +129,14 @@ export function randomFloatTween(scene) {
             ease: 'Sine.easeInOut',
             callbackScope: scene,
             onComplete: () => {
-                delay = this.time.delayedCall(30, randomFloatTween, [], this);
+                delay = scene.time.delayedCall(30, action, [], scene);
             },
         });
+
+        console.log(scene.scene.tweens)
     }
 
-    action.call(scene);
+    return action();
 }
 
 export function settingsButtonAndFunctionality(scene) {
@@ -141,19 +144,19 @@ export function settingsButtonAndFunctionality(scene) {
     .setInteractive()
     .setScale(0.1);
 
-    let settingsButtonX = settingsButton.x - 200;
-    let settingsButtonY = settingsButton.y + 50;
-
     let settingsWindowX = 200;
     let settingsWindowY = 300;
 
     settingsButton.on('pointerdown', () => {
-        if (settingsButtonCliked) { return }
+        if (settingsButtonCliked) { console.log(settingsButtonCliked); return }
         settingsButtonCliked = true;
+
+        let beginXpos = windowsWidth - 250;
+        let beginYpos = 100;
         
         const settingsWindow = scene.add.graphics();
         settingsWindow.fillStyle(0x808080, 0.8);
-        settingsWindow.fillRoundedRect(settingsButtonX, settingsButtonY, settingsWindowX, settingsWindowY, 8);
+        settingsWindow.fillRoundedRect(beginXpos, beginYpos, settingsWindowX, settingsWindowY, 8);
 
         console.log(settingsButton.x, settingsButton.y);
     
@@ -167,17 +170,17 @@ export function settingsButtonAndFunctionality(scene) {
     
         let musicIsChecked = true;
     
-        const checkbox = scene.add.rectangle(1030, 160, 20, 20, 0xffffff)
+        const checkbox = scene.add.rectangle(beginXpos + 177, beginYpos + 60, 20, 20, 0xffffff)
             .setStrokeStyle(2, 0x000000)
             .setInteractive();
     
-        const checkboxLabel = scene.add.text(870, 150, 'Background music', {
+        const checkboxLabel = scene.add.text(beginXpos, beginYpos + 50, 'Background music', {
             fontFamily: 'Arial',
             fontSize: '15px',
             color: '#ffffff'
         });
     
-        const checkmark = scene.add.text(1022, 150, '✓', {
+        const checkmark = scene.add.text(beginXpos + 170, beginYpos + 50, '✓', {
             fontFamily: 'Arial',
             fontSize: '20px',
             color: '#00ff00'
@@ -198,17 +201,17 @@ export function settingsButtonAndFunctionality(scene) {
     
         let animationIsChecked = true;
     
-        const checkboxLabelAnimation = scene.add.text(870, 200, 'Animation', {
+        const checkboxLabelAnimation = scene.add.text(beginXpos, 200, 'Animation', {
             fontFamily: 'Arial',
             fontSize: '15px',
             color: '#ffffff'
         });
     
-        const checkboxAnimation = scene.add.rectangle(1030, 210, 20, 20, 0xffffff)
+        const checkboxAnimation = scene.add.rectangle(beginXpos + 177, beginYpos + 110, 20, 20, 0xffffff)
             .setStrokeStyle(2, 0x000000)
             .setInteractive();
     
-        const checkmarkAnimation = scene.add.text(1022, 200, '✓', {
+        const checkmarkAnimation = scene.add.text(beginXpos + 170, beginYpos + 100, '✓', {
             fontFamily: 'Arial',
             fontSize: '20px',
             color: '#00ff00'
@@ -220,10 +223,12 @@ export function settingsButtonAndFunctionality(scene) {
             checkmarkAnimation.setVisible(animationIsChecked);
     
             if (!isAnimationRunning && tweens) {
-                tweens.remove();
+                // tweens.remove();
                 if (delay) {
-                    delay.remove();
-                    delay = null;
+                    // delay.remove();
+                    // delay = null;
+                    isAnimationRunning = true;
+                    stopped = true;
                 }
             } else {
                 randomFloatTween.call(scene);
@@ -241,6 +246,8 @@ export function settingsButtonAndFunctionality(scene) {
             checkboxLabelAnimation.destroy();
             checkboxAnimation.destroy();
             checkmarkAnimation.destroy();
+
+            settingsButtonCliked = false;
         });
 
         settingsButton.on('pointerover', () => {

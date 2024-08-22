@@ -43,43 +43,13 @@ export class MainMenu extends Scene
 
         title.setShadow(5, 5, '#1a1a1a', 5, true, true);
 
-        function action() {
-            if (!isAnimationRunning) { return }
-    
-            function getRandomOffset() {
-                let offset;
-                do {
-                    offset = Phaser.Math.Between(-15, 15);
-                } while (offset >= -5 && offset <= 5);
-                return offset;
-            }
-            
-            let randomX = getRandomOffset() * sensibility;
-            let randomY = getRandomOffset() * sensibility;
-            
-        
-            tweens = this.tweens.add({
-                targets: background,
-                x: background.x + randomX,
-                y: background.y + randomY,
-                duration: Phaser.Math.Between(600, 800),
-                yoyo: true,
-                repeat: 0,
-                ease: 'Sine.easeInOut',
-                callbackScope: this,
-                onComplete: () => {
-                    delay = this.time.delayedCall(30, action, [], this);
-                },
-            });
-        }
-    
-        action.call(this);
+        components.settingsButtonAndFunctionality(this);
+
+        components.randomFloatTween(this)
 
         const scale = this.windowWidth < 768 ? 0.5 : 1; // If window width is less than 768px (common mobile width), scale to 80%
         background.setScale(scale);
         background.setOrigin(0.5);
-
-        components.settingsButtonAndFunctionality(this);
 
 
         const createButtonBackground = (x, y, width, height) => {
