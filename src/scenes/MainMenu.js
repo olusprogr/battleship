@@ -10,6 +10,12 @@ export class MainMenu extends Scene
         this.windowWidth = window.innerWidth
         this.windowsHeight = window.innerHeight
         this.mobile = false
+
+        this.stopped = false;
+    }
+
+    getStoppedStatus() {
+        return this.stopped;
     }
 
     create ()
@@ -45,7 +51,40 @@ export class MainMenu extends Scene
 
         components.settingsButtonAndFunctionality(this);
 
-        components.randomFloatTween(this)
+        // components.randomFloatTween(this);
+
+        function action() {
+            if (!isAnimationRunning || this.stopped) { console.log("stopped"); return }
+    
+            function getRandomOffset() {
+                let offset;
+                do {
+                    offset = Phaser.Math.Between(-15, 15);
+                } while (offset >= -5 && offset <= 5);
+                return offset;
+            }
+            
+            let randomX = getRandomOffset() * sensibility;
+            let randomY = getRandomOffset() * sensibility;
+    
+            console.log(this.tweens);
+    
+            tweens = this.tweens.add({
+                targets: background,
+                x: background.x + randomX,
+                y: background.y + randomY,
+                duration: Phaser.Math.Between(600, 800),
+                yoyo: true,
+                repeat: 0,
+                ease: 'Sine.easeInOut',
+                callbackScope: this,
+                onComplete: () => {
+                    delay = this.time.delayedCall(30, action, [], this);
+                },
+            });
+        }
+    
+        action.call(this);
 
         const scale = this.windowWidth < 768 ? 0.5 : 1; // If window width is less than 768px (common mobile width), scale to 80%
         background.setScale(scale);

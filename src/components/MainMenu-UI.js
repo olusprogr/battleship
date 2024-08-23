@@ -103,10 +103,9 @@ export function singleplayerButton(scene) {
     });
 }
 
-export function randomFloatTween(scene) {
+export function randomFloatTween(scene, background) {
     function action() {
-        if (!isAnimationRunning) { return }
-        if (stopped) { return }
+        if (!isAnimationRunning || stopped) { console.log("stopped"); return }
 
         function getRandomOffset() {
             let offset;
@@ -118,6 +117,8 @@ export function randomFloatTween(scene) {
         
         let randomX = getRandomOffset() * sensibility;
         let randomY = getRandomOffset() * sensibility;
+
+        console.log(this)
 
         tweens = scene.tweens.add({
             targets: background,
@@ -132,8 +133,6 @@ export function randomFloatTween(scene) {
                 delay = scene.time.delayedCall(30, action, [], scene);
             },
         });
-
-        console.log(scene.scene.tweens)
     }
 
     return action();
