@@ -74,7 +74,7 @@ export function multiplayerButton(scene) {
     });
 
     multiplayerButton.on('pointerdown', () => {
-        this.scene.start('Multiplayer');
+        scene.scene.start('Multiplayer');
     });
 }
 
